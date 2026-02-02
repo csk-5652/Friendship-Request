@@ -2,75 +2,123 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Friendship Request</title>
+<title>Valentine Magic</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<!-- Bootstrap -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
 <style>
 body{
     min-height:100vh;
-    background:linear-gradient(135deg,#6a5acd,#8a7cff);
+    background:linear-gradient(135deg,#ff9ec4,#ff6f91);
     display:flex;
     justify-content:center;
     align-items:center;
     overflow:hidden;
     font-family:Segoe UI,sans-serif;
+    color:#fff;
+    transition: background 1s;
+}
+
+.shake{
+    animation:shake 0.15s infinite;
+}
+@keyframes shake{
+    0%{transform:translate(2px,2px);}
+    25%{transform:translate(-2px,-2px);}
+    50%{transform:translate(2px,-2px);}
+    75%{transform:translate(-2px,2px);}
+    100%{transform:translate(0,0);}
 }
 
 .card-box{
-    background:rgba(255,255,255,0.2);
-    backdrop-filter:blur(18px);
+    background:rgba(255,255,255,0.25);
+    backdrop-filter:blur(15px);
     border-radius:24px;
     padding:40px 30px;
     width:100%;
     max-width:420px;
     text-align:center;
-    color:#fff;
     box-shadow:0 30px 60px rgba(0,0,0,0.3);
     position:relative;
-    z-index:1;
+    transition: all 1s;
+}
+
+.card-box.scary{
+    background:rgba(20,0,20,0.85);
+    box-shadow:0 30px 60px rgba(0,0,0,0.7);
+    animation:glitch 2s infinite;
+}
+
+@keyframes glitch {
+    0%{text-shadow:2px 0 red,-2px 0 cyan;}
+    20%{text-shadow:-2px 0 red,2px 0 cyan;}
+    40%{text-shadow:2px 0 red,-2px 0 cyan;}
+    60%{text-shadow:-2px 0 red,2px 0 cyan;}
+    80%{text-shadow:2px 0 red,-2px 0 cyan;}
+    100%{text-shadow:none;}
 }
 
 h2{
-    font-weight:600;
     margin-bottom:10px;
+    font-weight:600;
+    transition: all 0.5s;
+}
+
+h2.scary{
+    animation:flicker 1.5s infinite;
+    color:#ff4444;
+}
+@keyframes flicker{
+    0%,19%,21%,23%,25%,54%,56%,100%{opacity:1;}
+    20%,22%,24%,55%{opacity:0.2;}
 }
 
 .hand{
-    font-size:34px;
+    font-size:36px;
     margin-bottom:25px;
 }
 
-.button-area{
-    position:relative;
-    height:80px;
-}
-
+.button-area{position:relative;height:80px;}
 .btn-custom{
     padding:12px 32px;
     border-radius:40px;
     font-size:18px;
     min-width:120px;
+    transition: all 0.5s;
 }
 
-/* YES inside card (left) */
-#yesBtn{
-    position:absolute;
-    left:0;
-}
-
-/* NO floats but starts inside card (right) */
+#yesBtn{position:absolute;left:0;}
 #noBtn{
     position:fixed;
     z-index:9999;
-    transition:left 0.6s ease, top 0.6s ease;
+    transition:left .6s ease, top .6s ease;
+}
+
+#fakeHack{
+    display:none;
+    font-family:monospace;
+    text-align:left;
+    margin-top:20px;
+}
+
+.terminal{
+    background:#000;
+    border-radius:12px;
+    padding:15px;
+    color:#0f0;
+    font-size:14px;
+    height:120px;
+    overflow:hidden;
 }
 
 .result{
     display:none;
-    animation:zoomIn .8s ease forwards;
+    animation:zoom .8s ease forwards;
+}
+@keyframes zoom{
+    from{opacity:0;transform:scale(.6);}
+    to{opacity:1;transform:scale(1);}
 }
 
 .result img{
@@ -79,25 +127,15 @@ h2{
     margin-bottom:15px;
 }
 
-@keyframes zoomIn{
-    from{opacity:0;transform:scale(.6);}
-    to{opacity:1;transform:scale(1);}
-}
-
-/* hearts */
-.heart{
+/* emoji rain */
+.emoji{
     position:fixed;
-    font-size:22px;
-    animation:floatUp 3s linear forwards;
+    font-size:26px;
+    animation:fall 3s linear forwards;
 }
-
-@keyframes floatUp{
-    from{transform:translateY(0);opacity:1;}
-    to{transform:translateY(-260px);opacity:0;}
-}
-
-@media(max-width:576px){
-    h2{font-size:22px;}
+@keyframes fall{
+    from{top:-40px;opacity:1;}
+    to{top:100vh;opacity:0;}
 }
 </style>
 </head>
@@ -105,99 +143,124 @@ h2{
 <body>
 
 <div class="card-box" id="card">
-    <h2>Will you be my friend?</h2>
-    <div class="hand">🤝</div>
+    <h2 id="title">Will you be my Valentine?</h2>
+    <div class="hand">💖</div>
 
     <div class="button-area" id="buttons">
         <button id="yesBtn" class="btn btn-success btn-custom" onclick="yesClick()">Yes</button>
     </div>
 
+    <!-- Fake hacking -->
+    <div id="fakeHack">
+        <div class="terminal" id="terminal"></div>
+        <div class="progress mt-3">
+            <div id="friendBar" class="progress-bar progress-bar-striped progress-bar-animated bg-danger" style="width:0%">
+                Love Level
+            </div>
+        </div>
+    </div>
+
+    <!-- Final result -->
     <div class="result mt-4" id="result">
-        <img src="https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=800&q=80" alt="Friendship">
-        <h4>🎉 Congratulations 🎉</h4>
-        <p>You are my friend now 💜</p>
+        <!-- Using uploaded local image -->
+        <img src="https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=800&q=80">
+        
+        <h4>💘 Love Spell Gone Wild! 💘</h4>
+        <p>Haha! The Valentine magic went a little crazy 😜💀… but now you’re officially my Valentine!</p>
     </div>
 </div>
 
-<!-- NO button -->
-<button id="noBtn" class="btn btn-danger btn-custom">No</button>
+<button id="noBtn" class="btn btn-danger btn-custom">No 💔</button>
 
-<!-- sound -->
 <audio id="yesSound">
-    <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_8c5bfa2d9c.mp3" type="audio/mpeg">
+    <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_8c5bfa2d9c.mp3">
+</audio>
+<audio id="scarySound">
+    <source src="https://cdn.pixabay.com/audio/2022/10/27/audio_e7b8a5d832.mp3">
 </audio>
 
 <script>
 const noBtn = document.getElementById("noBtn");
 const card = document.getElementById("card");
+const title = document.getElementById("title");
 
-/* place NO button on right side of card initially */
-function setInitialPosition(){
-    const cardRect = card.getBoundingClientRect();
-    const padding = 20;
-
-    const x = cardRect.right - noBtn.offsetWidth - padding;
-    const y = cardRect.top + cardRect.height / 2 - noBtn.offsetHeight / 2;
-
-    noBtn.style.left = x + "px";
-    noBtn.style.top = y + "px";
+function setNoInitial(){
+    const r = card.getBoundingClientRect();
+    noBtn.style.left = (r.right - noBtn.offsetWidth - 20) + "px";
+    noBtn.style.top = (r.top + r.height/2 - noBtn.offsetHeight/2) + "px";
 }
+window.onload = setNoInitial;
+window.onresize = setNoInitial;
 
-window.addEventListener("load", setInitialPosition);
-window.addEventListener("resize", setInitialPosition);
-
-let isMoving = false;
-
-/* move NO slowly inside screen */
+let moving=false;
 function moveNo(){
-    if(isMoving) return;
-    isMoving = true;
-
-    noBtn.textContent = "😈";
-
-    const padding = 20;
-    const maxX = window.innerWidth - noBtn.offsetWidth - padding;
-    const maxY = window.innerHeight - noBtn.offsetHeight - padding;
-
-    const x = Math.random() * maxX;
-    const y = Math.random() * maxY;
-
-    noBtn.style.left = x + "px";
-    noBtn.style.top = y + "px";
-
-    setTimeout(() => {
-        isMoving = false;
-    }, 650);
+    if(moving) return;
+    moving=true;
+    noBtn.textContent="💔";
+    const maxX=window.innerWidth-noBtn.offsetWidth-20;
+    const maxY=window.innerHeight-noBtn.offsetHeight-20;
+    noBtn.style.left=Math.random()*maxX+"px";
+    noBtn.style.top=Math.random()*maxY+"px";
+    setTimeout(()=>moving=false,650);
 }
-
-noBtn.addEventListener("mouseenter", moveNo);
-noBtn.addEventListener("click", moveNo);
-noBtn.addEventListener("touchstart", moveNo);
-
-noBtn.addEventListener("mouseleave", () => {
-    noBtn.textContent = "No";
-});
+noBtn.onmouseenter=moveNo;
+noBtn.onclick=moveNo;
+noBtn.onmouseleave=()=>noBtn.textContent="No 💔";
 
 function yesClick(){
     document.getElementById("yesSound").play();
-    document.getElementById("buttons").style.display = "none";
-    noBtn.style.display = "none";
-    document.getElementById("result").style.display = "block";
-    createHearts();
+    document.getElementById("scarySound").play();
+    document.getElementById("buttons").style.display="none";
+    noBtn.style.display="none";
+
+    document.body.style.background = "linear-gradient(135deg,#0a0a0a,#2b0000)";
+    card.classList.add("scary");
+    title.classList.add("scary");
+    document.body.classList.add("shake");
+
+    document.getElementById("fakeHack").style.display="block";
+
+    const lines=[
+        "Summoning spooky magic...",
+        "Glitching hearts...",
+        "Analyzing love vibes...",
+        "Casting haunted charm...",
+        "Valentine magic detected 💀"
+    ];
+
+    let i=0;
+    const terminal=document.getElementById("terminal");
+    const bar=document.getElementById("friendBar");
+
+    const interval=setInterval(()=>{
+        terminal.innerHTML+=lines[i]+"<br>";
+        terminal.scrollTop=terminal.scrollHeight;
+        bar.style.width=((i+1)*20)+"%";
+        i++;
+
+        if(i>=lines.length){
+            clearInterval(interval);
+            setTimeout(()=>{
+                document.body.classList.remove("shake");
+                document.getElementById("fakeHack").style.display="none";
+                document.getElementById("result").style.display="block";
+                emojiRain();
+            },700);
+        }
+    },500);
 }
 
-/* heart animation */
-function createHearts(){
-    for(let i = 0; i < 24; i++){
-        setTimeout(() => {
-            const h = document.createElement("div");
-            h.className = "heart";
-            h.innerHTML = "❤️";
-            h.style.left = Math.random() * window.innerWidth + "px";
-            h.style.bottom = "0";
-            document.body.appendChild(h);
-            setTimeout(() => h.remove(), 3000);
-        }, i * 90);
+function emojiRain(){
+    const emojis=["💀","👻","😱"];
+    for(let i=0;i<50;i++){
+        setTimeout(()=>{
+            const e=document.createElement("div");
+            e.className="emoji";
+            e.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+            e.style.left=Math.random()*window.innerWidth+"px";
+            document.body.appendChild(e);
+            setTimeout(()=>e.remove(),3000);
+        },i*60);
     }
 }
 </script>
